@@ -15,10 +15,10 @@
 * http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html
 *
 * Further documentation:
-* The file ran-instructions.pdf contains further documentation and 
+* The file ran-instructions.pdf contains further documentation and
 * instructions.
 *
-* Copyright 2001-2008 by Agner Fog. 
+* Copyright 2001-2008 by Agner Fog.
 * GNU General Public License http://www.gnu.org/licenses/gpl.html
 *******************************************************************************/
 
@@ -81,13 +81,13 @@ uint32_t CRandomMersenne::BRandom() {
       static const uint32_t mag01[2] = {0, MERS_A};
 
       int kk;
-      for (kk=0; kk < MERS_N-MERS_M; kk++) {    
+      for (kk=0; kk < MERS_N-MERS_M; kk++) {
          y = (mt[kk] & UPPER_MASK) | (mt[kk+1] & LOWER_MASK);
          mt[kk] = mt[kk+MERS_M] ^ (y >> 1) ^ mag01[y & 1];}
 
-      for (; kk < MERS_N-1; kk++) {    
+      for (; kk < MERS_N-1; kk++) {
          y = (mt[kk] & UPPER_MASK) | (mt[kk+1] & LOWER_MASK);
-         mt[kk] = mt[kk+(MERS_M-MERS_N)] ^ (y >> 1) ^ mag01[y & 1];}      
+         mt[kk] = mt[kk+(MERS_M-MERS_N)] ^ (y >> 1) ^ mag01[y & 1];}
 
       y = (mt[MERS_N-1] & UPPER_MASK) | (mt[0] & LOWER_MASK);
       mt[MERS_N-1] = mt[MERS_M-1] ^ (y >> 1) ^ mag01[y & 1];
@@ -119,7 +119,7 @@ int CRandomMersenne::IRandom(int min, int max) {
       if (max == min) return min; else return 0x80000000;
    }
    // Multiply interval with random and truncate
-   int r = int((double)(uint32_t)(max - min + 1) * Random() + min); 
+   int r = int((double)(uint32_t)(max - min + 1) * Random() + min);
    if (r > max) r = max;
    return r;
 }
