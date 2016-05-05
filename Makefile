@@ -1,4 +1,4 @@
-EXEC = subsampling_reads
+EXEC = fastq-sample
 
 CC = g++
 CFLAGS = -Wall -Wextra -O3 -march=native -fopenmp
