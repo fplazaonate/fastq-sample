@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <sstream>
 #include "Settings.hh"
-#include "ReadsRandomSampler.hh"
+#include "FastqRandomSampler.hh"
 #include "FastqWriter.hh"
 
 int main(int argc, char *argv[])
@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
         if (settings.target_num_bases != 0)
         {
             const std::vector<FastqEntry>& fastq_entries =
-                ReadsRandomSampler::num_bases(settings.fastq_files, settings.target_num_bases);
+                FastqRandomSampler::num_bases(settings.fastq_files, settings.target_num_bases);
 
             FastqWriter fastq_writer(settings.output_file);
             fastq_writer.write(fastq_entries);
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
         else if (settings.target_num_reads != 0)
         {
             const std::vector<FastqEntry>& fastq_entries =
-                ReadsRandomSampler::num_reads(settings.fastq_files, settings.target_num_reads);
+                FastqRandomSampler::num_reads(settings.fastq_files, settings.target_num_reads);
 
             FastqWriter fastq_writer(settings.output_file);
             fastq_writer.write(fastq_entries);

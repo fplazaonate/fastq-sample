@@ -1,11 +1,11 @@
-#include "ReadsRandomSampler.hh"
+#include "FastqRandomSampler.hh"
 #include "FastqMultiReader.hh"
 #include <algorithm>
 #include <ctime>
 #include <iostream>
 #include "randomc.h"
 
-std::vector<FastqEntry> ReadsRandomSampler::num_reads(const std::vector<std::string>& fastq_files, const size_t target_num_reads)
+std::vector<FastqEntry> FastqRandomSampler::num_reads(const std::vector<std::string>& fastq_files, const size_t target_num_reads)
 {
     std::vector<FastqEntry> fastq_entries;
 
@@ -37,7 +37,7 @@ std::vector<FastqEntry> ReadsRandomSampler::num_reads(const std::vector<std::str
     return fastq_entries;
 }
 
-std::vector<FastqEntry> ReadsRandomSampler::num_bases(const std::vector<std::string>& fastq_files, const size_t target_num_bases)
+std::vector<FastqEntry> FastqRandomSampler::num_bases(const std::vector<std::string>& fastq_files, const size_t target_num_bases)
 {
     std::vector<FastqEntry> fastq_entries;
     CRandomMersenne mt(std::time(0));
