@@ -2,6 +2,8 @@ fastq-sample
 ===========
 fastq-sample performs simple random sampling of reads from FASTQ files.
 
+Sampling modes
+-------------
 2 modes are available:
 *  random sampling of a target number of reads
 *  random sampling of a target number of bases
