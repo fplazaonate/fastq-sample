@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 {
     try
     {
-        const Settings& settings = get_settings(argc, argv);
+        const Settings& settings = Settings::get_settings(argc, argv);
 
         std::auto_ptr<FastqRandomSampler> fastq_random_sampler =
             FastqRandomSamplerFactory::create_sampler(

@@ -23,13 +23,20 @@
 #include <vector>
 #include <string>
 
-struct Settings
+class Settings
 {
-	std::vector<std::string> fastq_files;
-	std::string output_file;
-	size_t target_num_reads;
-	size_t target_num_bases;
+    public:
+        std::vector<std::string> fastq_files;
+        std::string output_file;
+        size_t target_num_reads;
+        size_t target_num_bases;
+        static Settings get_settings(int argc, char* argv[]);
+
+    private:
+        template <typename T>
+        static void check_is_set(const std::string& setting_name, const T& setting_value);
+        static void check_file_is_readable(const std::string& filepath);
+        static void check_file_is_writable(const std::string& filepath);
 };
 
-Settings get_settings(int argc, char* argv[]);
 #endif // SETTINGS_HH
