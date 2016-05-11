@@ -28,14 +28,14 @@ Settings get_settings(int argc, char* argv[])
 	Settings settings;
 
 	// Create options decription
-	po::options_description opts_desc( "");
+	po::options_description opts_desc( "Random sampling of reads from FASTQ files");
 
 	opts_desc.add_options()
 		("help,h", "print this help message")
-		("fastq-files,f", po::value<std::vector<std::string> >(&settings.fastq_files)->multitoken()/*->required()*/, "")
-		("output-file,o", po::value<std::string>(&settings.output_file)/*->required()*/, "")
-		("target-num-bases,b", po::value<size_t>(&settings.target_num_bases)->default_value(0), "")
-		("target-num-reads,r", po::value<size_t>(&settings.target_num_reads)->default_value(0), "")
+		("fastq-files,f", po::value<std::vector<std::string> >(&settings.fastq_files)->multitoken(), "input FASTQ files")
+		("output-file,o", po::value<std::string>(&settings.output_file), "output FASTQ file")
+		("target-num-reads,r", po::value<size_t>(&settings.target_num_reads)->default_value(0), "number of reads to sample")
+		("target-num-bases,b", po::value<size_t>(&settings.target_num_bases)->default_value(0), "number of bases to sample")
 		;
 
 	// Retrieve and parse command line settings

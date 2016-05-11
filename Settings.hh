@@ -27,8 +27,8 @@ struct Settings
 {
 	std::vector<std::string> fastq_files;
 	std::string output_file;
-	size_t target_num_bases;
 	size_t target_num_reads;
+	size_t target_num_bases;
 };
 
 Settings get_settings(int argc, char* argv[]);

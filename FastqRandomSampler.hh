@@ -22,13 +22,57 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 #include "FastqEntry.hh"
 
 class FastqRandomSampler
 {
     public:
-        static std::vector<FastqEntry> num_reads(const std::vector<std::string>& fastq_files, const size_t target_num_reads);
-        static std::vector<FastqEntry> num_bases(const std::vector<std::string>& fastq_files, const size_t target_num_bases);
+        virtual std::vector<FastqEntry> sample(const std::vector<std::string>& fastq_files) = 0;
+        virtual ~FastqRandomSampler();
+};
+
+inline FastqRandomSampler::~FastqRandomSampler()
+{
+}
+
+class NumReadsRandomSampler : public FastqRandomSampler
+{
+    public:
+        NumReadsRandomSampler(const size_t target_num_reads);
+        std::vector<FastqEntry> sample(const std::vector<std::string>& fastq_files);
+    private:
+        const size_t target_num_reads_;
+};
+
+inline NumReadsRandomSampler::NumReadsRandomSampler(const size_t target_num_reads)
+    : target_num_reads_(target_num_reads)
+{
+}
+
+class NumBasesRandomSampler : public FastqRandomSampler
+{
+    public:
+        NumBasesRandomSampler(const size_t target_num_bases);
+        std::vector<FastqEntry> sample(const std::vector<std::string>& fastq_files);
+    private:
+        const size_t target_num_bases_;
+};
+
+inline NumBasesRandomSampler::NumBasesRandomSampler(const size_t target_num_bases)
+    : target_num_bases_(target_num_bases)
+{
+}
+
+class FastqRandomSamplerFactory
+{
+    public:
+        static std::auto_ptr<FastqRandomSampler> create_sampler(
+                const size_t target_num_reads,
+                const size_t target_num_bases);
+    private:
+        static const char MISSING_TARGET_ERR_MSG[];
+        static const char MULTIPLE_TARGET_ERR_MSG[];
 };
 
 #endif // FASTQ_RANDOM_SAMPLER_HH

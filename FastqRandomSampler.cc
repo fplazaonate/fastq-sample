@@ -19,20 +19,21 @@
 
 #include "FastqRandomSampler.hh"
 #include "FastqMultiReader.hh"
+#include "randomc.h"
+#include <iostream>
 #include <algorithm>
 #include <ctime>
-#include <iostream>
-#include "randomc.h"
+#include <stdexcept>
 
-std::vector<FastqEntry> FastqRandomSampler::num_reads(const std::vector<std::string>& fastq_files, const size_t target_num_reads)
+std::vector<FastqEntry> NumReadsRandomSampler::sample(const std::vector<std::string>& fastq_files)
 {
     std::vector<FastqEntry> fastq_entries;
 
     // Fill reservoir
     FastqMultiReader fastq_multi_reader(fastq_files);
-    fastq_multi_reader.next_chunk(fastq_entries, target_num_reads);
+    fastq_multi_reader.next_chunk(fastq_entries, target_num_reads_);
 
-    if (fastq_entries.size() < target_num_reads)
+    if (fastq_entries.size() < target_num_reads_)
     {
         std::cerr << "warning: only " << fastq_entries.size() << " reads available in input files." << std::endl;
     }
@@ -41,11 +42,11 @@ std::vector<FastqEntry> FastqRandomSampler::num_reads(const std::vector<std::str
         // Perform reservoir sampling
         CRandomMersenne mt(std::time(0));
         FastqEntry fastq_entry;
-        size_t n = target_num_reads;
+        size_t n = target_num_reads_;
         while (fastq_multi_reader.next_entry(fastq_entry))
         {
             const size_t j = mt.IRandomX(0,n);
-            if (j < target_num_reads)
+            if (j < target_num_reads_)
             {
                 fastq_entries[j] = fastq_entry;
             }
@@ -56,7 +57,7 @@ std::vector<FastqEntry> FastqRandomSampler::num_reads(const std::vector<std::str
     return fastq_entries;
 }
 
-std::vector<FastqEntry> FastqRandomSampler::num_bases(const std::vector<std::string>& fastq_files, const size_t target_num_bases)
+std::vector<FastqEntry> NumBasesRandomSampler::sample(const std::vector<std::string>& fastq_files)
 {
     std::vector<FastqEntry> fastq_entries;
     CRandomMersenne mt(std::time(0));
@@ -76,7 +77,7 @@ std::vector<FastqEntry> FastqRandomSampler::num_bases(const std::vector<std::str
     // Pick reads until target number of bases is reached
     size_t cur_num_bases = 0;
     size_t cur_num_entries = 0;
-    while (cur_num_entries < fastq_entries.size() && cur_num_bases < target_num_bases)
+    while (cur_num_entries < fastq_entries.size() && cur_num_bases < target_num_bases_)
     {
         const FastqEntry& cur_fastq_entry = fastq_entries[fastq_entries_indexes[cur_num_entries]];
         cur_num_bases += cur_fastq_entry.seq.size();
@@ -85,7 +86,7 @@ std::vector<FastqEntry> FastqRandomSampler::num_bases(const std::vector<std::str
     const size_t final_num_entries = cur_num_entries;
     fastq_entries_indexes.resize(final_num_entries);
 
-    if (cur_num_bases < target_num_bases)
+    if (cur_num_bases < target_num_bases_)
     {
         std::cerr << "warning: only " << cur_num_bases << " bases available in input files." << std::endl;
     }
@@ -102,3 +103,35 @@ std::vector<FastqEntry> FastqRandomSampler::num_bases(const std::vector<std::str
     return fastq_entries;
 }
 
+std::auto_ptr<FastqRandomSampler> FastqRandomSamplerFactory::create_sampler(
+        const size_t target_num_reads,
+        const size_t target_num_bases)
+{
+    FastqRandomSampler* fastq_random_sampler = NULL;
+
+    if (target_num_reads != 0)
+    {
+        fastq_random_sampler = new NumReadsRandomSampler(target_num_reads);
+    }
+    else if (target_num_bases != 0)
+    {
+        if (fastq_random_sampler != NULL)
+        {
+            throw std::invalid_argument(MULTIPLE_TARGET_ERR_MSG);
+        }
+        fastq_random_sampler = new NumBasesRandomSampler(target_num_bases);
+    }
+
+    if (fastq_random_sampler == NULL)
+    {
+        throw std::invalid_argument(MISSING_TARGET_ERR_MSG);
+    }
+
+    return std::auto_ptr<FastqRandomSampler>(fastq_random_sampler);
+}
+
+const char FastqRandomSamplerFactory::MISSING_TARGET_ERR_MSG[] =
+"error: missing --target-xxx parameter";
+
+const char FastqRandomSamplerFactory::MULTIPLE_TARGET_ERR_MSG[] =
+"error: multiple --target-xxx parameters used";

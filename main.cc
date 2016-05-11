@@ -30,22 +30,16 @@ int main(int argc, char *argv[])
     {
         const Settings& settings = get_settings(argc, argv);
 
-        if (settings.target_num_bases != 0)
-        {
-            const std::vector<FastqEntry>& fastq_entries =
-                FastqRandomSampler::num_bases(settings.fastq_files, settings.target_num_bases);
+        std::auto_ptr<FastqRandomSampler> fastq_random_sampler =
+            FastqRandomSamplerFactory::create_sampler(
+                    settings.target_num_reads,
+                    settings.target_num_bases);
 
-            FastqWriter fastq_writer(settings.output_file);
-            fastq_writer.write(fastq_entries);
-        }
-        else if (settings.target_num_reads != 0)
-        {
-            const std::vector<FastqEntry>& fastq_entries =
-                FastqRandomSampler::num_reads(settings.fastq_files, settings.target_num_reads);
+        const std::vector<FastqEntry>& fastq_entries =
+            fastq_random_sampler->sample(settings.fastq_files);
 
-            FastqWriter fastq_writer(settings.output_file);
-            fastq_writer.write(fastq_entries);
-        }
+        FastqWriter fastq_writer(settings.output_file);
+        fastq_writer.write(fastq_entries);
     }
     catch (const std::exception& e)
     {
