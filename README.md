@@ -9,7 +9,7 @@ Sampling modes
 *  random sampling of a target number of bases
 *  random sampling of a target proportion of reads
 
-/bin/bash: qa : commande introuvable
+Usage
 -------------
   -f [ --fastq-files ] arg       input FASTQ files (use /dev/fd/0 for stdin)
   -o [ --output-file ] arg       output FASTQ file (use /dev/fd/1 for stdout)
