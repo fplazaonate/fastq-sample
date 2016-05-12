@@ -11,11 +11,11 @@ Sampling modes
 
 Usage
 -------------
-  -f [ --fastq-files ] arg       input FASTQ files (use /dev/fd/0 for stdin)
-  -o [ --output-file ] arg       output FASTQ file (use /dev/fd/1 for stdout)
-  -r [ --target-num-reads ] arg  number of reads to sample
-  -b [ --target-num-bases ] arg  number of bases to sample
-  -p [ --target-proportion ] arg proportion of total reads to sample
+*  `-f [ --fastq-files ] arg      `  input FASTQ files (use /dev/fd/0 for stdin)
+*  `-o [ --output-file ] arg      `  output FASTQ file (use /dev/fd/1 for stdout)
+*  `-r [ --target-num-reads ] arg `  number of reads to sample
+*  `-b [ --target-num-bases ] arg `  number of bases to sample
+*  `-p [ --target-proportion ] arg`  proportion of total reads to sample
 
 Compilation requirements
 -------------
