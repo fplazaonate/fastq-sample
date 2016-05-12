@@ -64,12 +64,27 @@ inline NumBasesRandomSampler::NumBasesRandomSampler(const size_t target_num_base
 {
 }
 
+class ProportionRandomSampler : public FastqRandomSampler
+{
+    public:
+        ProportionRandomSampler(const double target_proportion);
+        std::vector<FastqEntry> sample(const std::vector<std::string>& fastq_files);
+    private:
+        const double target_proportion_;
+};
+
+inline ProportionRandomSampler::ProportionRandomSampler(const double target_proportion)
+    : target_proportion_(target_proportion)
+{
+}
+
 class FastqRandomSamplerFactory
 {
     public:
         static std::auto_ptr<FastqRandomSampler> create_sampler(
                 const size_t target_num_reads,
-                const size_t target_num_bases);
+                const size_t target_num_bases,
+                const double target_proportion);
     private:
         static const char MISSING_TARGET_ERR_MSG[];
         static const char MULTIPLE_TARGET_ERR_MSG[];

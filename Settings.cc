@@ -24,6 +24,14 @@ namespace po = boost::program_options;
 #include <fstream>
 #include <stdexcept>
 
+Settings::Settings()
+    : fastq_files(),
+    output_file(),
+    target_num_reads(0),
+    target_num_bases(0),
+    target_proportion(0.0)
+{}
+
 Settings Settings::get_settings(int argc, char* argv[])
 {
     Settings settings;
@@ -35,8 +43,9 @@ Settings Settings::get_settings(int argc, char* argv[])
         ("help,h", "print this help message")
         ("fastq-files,f", po::value<std::vector<std::string> >(&settings.fastq_files)->multitoken(), "input FASTQ files")
         ("output-file,o", po::value<std::string>(&settings.output_file), "output FASTQ file")
-        ("target-num-reads,r", po::value<size_t>(&settings.target_num_reads)->default_value(0), "number of reads to sample")
-        ("target-num-bases,b", po::value<size_t>(&settings.target_num_bases)->default_value(0), "number of bases to sample")
+        ("target-num-reads,r", po::value<size_t>(&settings.target_num_reads), "number of reads to sample")
+        ("target-num-bases,b", po::value<size_t>(&settings.target_num_bases), "number of bases to sample")
+        ("target-proportion,p", po::value<double>(&settings.target_proportion), "proportion of total reads to sample")
         ;
 
     // Retrieve and parse command line settings
@@ -63,6 +72,8 @@ Settings Settings::get_settings(int argc, char* argv[])
 
     // Check output file
     check_file_is_writable(settings.output_file);
+
+    check_val_within_bounds("--target-proportion", settings.target_proportion, 0.0, 1.0);
 
     return (settings);
 }
@@ -101,7 +112,7 @@ void Settings::check_file_is_writable(const std::string& filepath)
     }
 }
 
-    template <typename T>
+template <typename T>
 void Settings::check_is_set(const std::string& setting_name, const T& setting_value)
 {
     if (setting_value.empty())
@@ -112,3 +123,12 @@ void Settings::check_is_set(const std::string& setting_name, const T& setting_va
     }
 }
 
+template <typename T>
+void Settings::check_val_within_bounds(const std::string& setting_name, T setting_value, T lower, T higher)
+{
+    if(setting_value < lower || setting_value > higher)
+    {
+        throw (std::invalid_argument("error: " + setting_name + " must be a value within range: " +
+                    '[' + boost::lexical_cast<std::string>(lower) + ';' + boost::lexical_cast<std::string>(higher) + ']'));
+    }
+}

@@ -30,13 +30,17 @@ class Settings
         std::string output_file;
         size_t target_num_reads;
         size_t target_num_bases;
+        double target_proportion;
         static Settings get_settings(int argc, char* argv[]);
 
     private:
+        Settings();
         template <typename T>
         static void check_is_set(const std::string& setting_name, const T& setting_value);
         static void check_file_is_readable(const std::string& filepath);
         static void check_file_is_writable(const std::string& filepath);
+        template <typename T>
+        static void check_val_within_bounds(const std::string& setting_name, T setting_value, T lower, T higher);
 };
 
 #endif // SETTINGS_HH

@@ -103,9 +103,33 @@ std::vector<FastqEntry> NumBasesRandomSampler::sample(const std::vector<std::str
     return fastq_entries;
 }
 
+std::vector<FastqEntry> ProportionRandomSampler::sample(const std::vector<std::string>& fastq_files)
+{
+    FastqMultiReader fastq_multi_reader(fastq_files);
+    std::vector<FastqEntry> fastq_entries;
+
+    if (target_proportion_ == 1.0)
+    {
+        fastq_multi_reader.all_entries(fastq_entries);
+    }
+    else
+    {
+        CRandomMersenne mt(std::time(0));
+        FastqEntry fastq_entry;
+        while (fastq_multi_reader.next_entry(fastq_entry))
+        {
+            if (mt.Random() <= target_proportion_)
+                fastq_entries.push_back(fastq_entry);
+        }
+    }
+
+    return fastq_entries;
+}
+
 std::auto_ptr<FastqRandomSampler> FastqRandomSamplerFactory::create_sampler(
         const size_t target_num_reads,
-        const size_t target_num_bases)
+        const size_t target_num_bases,
+        const double target_proportion)
 {
     FastqRandomSampler* fastq_random_sampler = NULL;
 
@@ -120,6 +144,14 @@ std::auto_ptr<FastqRandomSampler> FastqRandomSamplerFactory::create_sampler(
             throw std::invalid_argument(MULTIPLE_TARGET_ERR_MSG);
         }
         fastq_random_sampler = new NumBasesRandomSampler(target_num_bases);
+    }
+    else if (target_proportion != 0.0)
+    {
+        if (fastq_random_sampler != NULL)
+        {
+            throw std::invalid_argument(MULTIPLE_TARGET_ERR_MSG);
+        }
+        fastq_random_sampler = new ProportionRandomSampler(target_proportion);
     }
 
     if (fastq_random_sampler == NULL)
