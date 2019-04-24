@@ -32,10 +32,10 @@ int main(int argc, char *argv[])
 
         std::auto_ptr<FastqRandomSampler> fastq_random_sampler =
             FastqRandomSamplerFactory::create_sampler(
-                    settings.seed,
                     settings.target_num_reads,
                     settings.target_num_bases,
-                    settings.target_proportion);
+                    settings.target_proportion,
+                    settings.seed);
 
         const std::vector<FastqEntry>& fastq_entries =
             fastq_random_sampler->sample(settings.fastq_files);

@@ -39,42 +39,45 @@ inline FastqRandomSampler::~FastqRandomSampler()
 class NumReadsRandomSampler : public FastqRandomSampler
 {
     public:
-        NumReadsRandomSampler(const size_t target_num_reads);
+        NumReadsRandomSampler(const size_t target_num_reads, const int seed);
         std::vector<FastqEntry> sample(const std::vector<std::string>& fastq_files);
     private:
         const size_t target_num_reads_;
+        const int seed_;
 };
 
-inline NumReadsRandomSampler::NumReadsRandomSampler(const size_t target_num_reads)
-    : target_num_reads_(target_num_reads)
+inline NumReadsRandomSampler::NumReadsRandomSampler(const size_t target_num_reads, const int seed)
+    : target_num_reads_(target_num_reads), seed_(seed)
 {
 }
 
 class NumBasesRandomSampler : public FastqRandomSampler
 {
     public:
-        NumBasesRandomSampler(const size_t target_num_bases);
+        NumBasesRandomSampler(const size_t target_num_bases, const int seed);
         std::vector<FastqEntry> sample(const std::vector<std::string>& fastq_files);
     private:
         const size_t target_num_bases_;
+        const int seed_;
 };
 
-inline NumBasesRandomSampler::NumBasesRandomSampler(const size_t target_num_bases)
-    : target_num_bases_(target_num_bases)
+inline NumBasesRandomSampler::NumBasesRandomSampler(const size_t target_num_bases, const int seed)
+    : target_num_bases_(target_num_bases), seed_(seed)
 {
 }
 
 class ProportionRandomSampler : public FastqRandomSampler
 {
     public:
-        ProportionRandomSampler(const double target_proportion);
+        ProportionRandomSampler(const double target_proportion, const int seed);
         std::vector<FastqEntry> sample(const std::vector<std::string>& fastq_files);
     private:
         const double target_proportion_;
+        const int seed_;
 };
 
-inline ProportionRandomSampler::ProportionRandomSampler(const double target_proportion)
-    : target_proportion_(target_proportion)
+inline ProportionRandomSampler::ProportionRandomSampler(const double target_proportion, const int seed)
+    : target_proportion_(target_proportion), seed_(seed)
 {
 }
 
@@ -84,7 +87,8 @@ class FastqRandomSamplerFactory
         static std::auto_ptr<FastqRandomSampler> create_sampler(
                 const size_t target_num_reads,
                 const size_t target_num_bases,
-                const double target_proportion);
+                const double target_proportion,
+                const int seed);
     private:
         static const char MISSING_TARGET_ERR_MSG[];
         static const char MULTIPLE_TARGET_ERR_MSG[];

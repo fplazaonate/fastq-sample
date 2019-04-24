@@ -40,7 +40,7 @@ std::vector<FastqEntry> NumReadsRandomSampler::sample(const std::vector<std::str
     else
     {
         // Perform reservoir sampling
-        CRandomMersenne mt(std::time(0));
+        CRandomMersenne mt(seed_);
         FastqEntry fastq_entry;
         size_t n = target_num_reads_;
         while (fastq_multi_reader.next_entry(fastq_entry))
@@ -60,7 +60,7 @@ std::vector<FastqEntry> NumReadsRandomSampler::sample(const std::vector<std::str
 std::vector<FastqEntry> NumBasesRandomSampler::sample(const std::vector<std::string>& fastq_files)
 {
     std::vector<FastqEntry> fastq_entries;
-    CRandomMersenne mt(std::time(0));
+    CRandomMersenne mt(seed_);
 
     // Read and shuffle all reads
     FastqMultiReader fastq_multi_reader(fastq_files);
@@ -114,7 +114,7 @@ std::vector<FastqEntry> ProportionRandomSampler::sample(const std::vector<std::s
     }
     else
     {
-        CRandomMersenne mt(std::time(0));
+        CRandomMersenne mt(seed_);
         FastqEntry fastq_entry;
         while (fastq_multi_reader.next_entry(fastq_entry))
         {
@@ -129,13 +129,14 @@ std::vector<FastqEntry> ProportionRandomSampler::sample(const std::vector<std::s
 std::auto_ptr<FastqRandomSampler> FastqRandomSamplerFactory::create_sampler(
         const size_t target_num_reads,
         const size_t target_num_bases,
-        const double target_proportion)
+        const double target_proportion, 
+        const int seed)
 {
     FastqRandomSampler* fastq_random_sampler = NULL;
 
     if (target_num_reads != 0)
     {
-        fastq_random_sampler = new NumReadsRandomSampler(target_num_reads);
+        fastq_random_sampler = new NumReadsRandomSampler(target_num_reads, seed);
     }
     else if (target_num_bases != 0)
     {
@@ -143,7 +144,7 @@ std::auto_ptr<FastqRandomSampler> FastqRandomSamplerFactory::create_sampler(
         {
             throw std::invalid_argument(MULTIPLE_TARGET_ERR_MSG);
         }
-        fastq_random_sampler = new NumBasesRandomSampler(target_num_bases);
+        fastq_random_sampler = new NumBasesRandomSampler(target_num_bases, seed);
     }
     else if (target_proportion != 0.0)
     {
@@ -151,7 +152,7 @@ std::auto_ptr<FastqRandomSampler> FastqRandomSamplerFactory::create_sampler(
         {
             throw std::invalid_argument(MULTIPLE_TARGET_ERR_MSG);
         }
-        fastq_random_sampler = new ProportionRandomSampler(target_proportion);
+        fastq_random_sampler = new ProportionRandomSampler(target_proportion, seed);
     }
 
     if (fastq_random_sampler == NULL)

@@ -31,6 +31,7 @@ class Settings
         size_t target_num_reads;
         size_t target_num_bases;
         double target_proportion;
+        int seed;
         static Settings get_settings(int argc, char* argv[]);
 
     private:
