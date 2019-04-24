@@ -41,11 +41,12 @@ Settings Settings::get_settings(int argc, char* argv[])
 
     opts_desc.add_options()
         ("help,h", "print this help message")
-        ("fastq-files,f", po::value<std::vector<std::string> >(&settings.fastq_files)->multitoken(), "input FASTQ files (use /dev/fd/0 for stdin)")
+        ("fastq-files,i", po::value<std::vector<std::string> >(&settings.fastq_files)->multitoken(), "input FASTQ files (use /dev/fd/0 for stdin)")
         ("output-file,o", po::value<std::string>(&settings.output_file), "output FASTQ file (use /dev/fd/1 for stdout)")
         ("target-num-reads,r", po::value<size_t>(&settings.target_num_reads), "number of reads to sample")
         ("target-num-bases,b", po::value<size_t>(&settings.target_num_bases), "number of bases to sample")
         ("target-proportion,p", po::value<double>(&settings.target_proportion), "proportion of total reads to sample")
+        ("seed,s", po::value<int>(&settings.seed)->default_value(1234), "seed for the random number generator")
         ;
 
     // Retrieve and parse command line settings
